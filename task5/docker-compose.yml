@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./back-end
+    # Expose the back-end service internally on port 5252
+    expose:
+      - "5252"
+    networks:
+      - softy-pinko-network
+
+  frontend:
+    build:
+      context: ./front-end
+    # Expose the front-end service internally on port 9000
+    expose:
+      - "9000"
+    depends_on:
+      - backend
+    networks:
+      - softy-pinko-network
+
+  proxy:
+    build:
+      context: ./proxy
+    ports:
+      - "80:80" # Expose port 80 on the host for external access
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - softy-pinko-network
+
+networks:
+  softy-pinko-network:
+    driver: bridge
