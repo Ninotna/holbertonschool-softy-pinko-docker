@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./front-end
+    expose:
+      - "9000"
+    networks:
+      - softy-pinko-network
+
+  # Scale the backend service to 2 instances
+  backend:
+    build:
+      context: ./back-end
+    expose:
+      - "5252"
+    networks:
+      - softy-pinko-network
+    deploy:
+      replicas: 2
+
+  proxy:
+    build:
+      context: ./proxy
+    ports:
+      - "80:80"
+    networks:
+      - softy-pinko-network
+    depends_on:
+      - backend # The proxy should depend on the backend service
+
+networks:
+  softy-pinko-network:
+    driver: bridge
